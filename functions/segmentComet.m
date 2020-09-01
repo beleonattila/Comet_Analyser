@@ -46,7 +46,7 @@ end
 
 ManualSegmBW = uint8(ManualSegmBW);
 
-[yrowOri, xcolOri, chsz] = size(Img);
+% [yrowOri, xcolOri, chsz] = size(Img);
 imageComulative = Img(:);
 %[n,xout] = hist(imageComulative(:),[0:1:255]); figure, bar(xout,n./sum(n)), grid, axis([0 255 0 0.1])
 
