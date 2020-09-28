@@ -1,4 +1,4 @@
-function classCatalog = composeClassImage(Classes, axesWidth)
+function classCatalog = composeClassImage(Classes, imgs, axesWidth)
 % AUTHOR:	Attila Beleon
 % DATE: 	Augustus 27, 2020
 % NAME: 	composeClassCatalog
@@ -7,13 +7,14 @@ function classCatalog = composeClassImage(Classes, axesWidth)
 % annotated comets.
 %
 % INPUT:
-%   thumbnailSet         Identification number assigned to the class.
+%   Classes         Class structure, contains member informations and
+%                   coordinates
+%
+%   imgs            Cut out thumbnails from these images
 %
 % OUTPUT:
-%   compImg          Contain the table for containing the "icon images".
-%   className       Name of the class.
-%   mapping         Contains PlateName, ImageName, OriginalImageName and
-%                   CellNumber for each cell shown.
+%   classCatalog    n-by-3 cell array, contains classNames, catalogImages
+%                   and layout of comet properties.
 %
 
 
@@ -36,10 +37,11 @@ for cl = 1:numel(classNames)
     x = 1;
     y = 1;
     for i = 1:numimgs
-        origSize = size(Classes.(classNames{cl}).Members(i).Thumbnail);
-        maxOrigSize = max(origSize);
+        coor = Classes.(classNames{cl}).Members(i).thumbnailCoor;
+        imID = Classes.(classNames{cl}).Members(i).ImID;
+        maxOrigSize = max([coor(2,1) - coor(1,1),coor(1,2) - coor(2,2)]);
         scaleValue = imSize/maxOrigSize;
-        resImg = imresize(Classes.(classNames{cl}).Members(i).Thumbnail, scaleValue);
+        resImg = imresize(imgs(coor(1,1):coor(2,1), coor(2,2):coor(1,2),1,imID), scaleValue);
         if x > cols
             x = 1;
             y = y + 1;
@@ -58,7 +60,7 @@ for cl = 1:numel(classNames)
             compImgs(offseth:offseth+imSize-1,offsetw:offsetw+imSize-1,2) = i;
         end
         subimgmeta.CellNumber = i;
-        subimgmeta.ImageName = Classes.(classNames{cl}).Members(i).ImName;
+        subimgmeta.ImName = Classes.(classNames{cl}).Members(i).ImName;
         %         subimgmeta.OriginalImageName = classImg.OriginalImageName;
         mapping{y,x} = subimgmeta;
         x = x + 1;
