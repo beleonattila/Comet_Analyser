@@ -1,4 +1,4 @@
-function [bool,msg] = checkString(toBeChecked, forbidden, capital, number, glyph, space, text)
+function [bool,msg] = checkString(toBeChecked, forbidden, capital, number, glyph, space, initial, text)
 % AUTHOR:   Attila Beleon
 % DATE:     July 1, 2020
 % NAME:     checkString
@@ -16,6 +16,7 @@ function [bool,msg] = checkString(toBeChecked, forbidden, capital, number, glyph
 %   number          Bool - Requirement of number
 %   glyph           Bool - Requirement of glyph
 %   space           Bool - Requirement of space
+%   initial         'n' - numeric 'c' - char Initial character
 %
 % OUTPUT:
 %   bool            Boolean indicating if the process was successful or not
@@ -92,6 +93,18 @@ if ~isempty(space)
     elseif space == 0 && ~isempty(regexp(toBeChecked,'\s', 'once'))
         bool = 0;
         msg = [text ' must not contain space!'];
+        return;
+    end
+end
+
+if ~isempty(initial)
+    if strcmp(initial,'n') && (isempty(str2num(toBeChecked(1))) || ~isempty(regexp(toBeChecked(1),'\W','once')) || ~isempty(regexp(toBeChecked,'\s','once')))
+        bool = 0;
+        msg = ['Initial of ' text ' must be numeric!'];
+        return;
+    elseif strcmp(initial,'c') && (~isempty(str2num(toBeChecked(1))) || ~isempty(regexp(toBeChecked(1),'\W','once')) || ~isempty(regexp(toBeChecked,'\s','once')))
+        bool = 0;
+        msg = ['Initial of ' text ' must be char!'];
         return;
     end
 end
