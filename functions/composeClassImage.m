@@ -39,12 +39,26 @@ for cl = 1:numel(classNames)
     for i = 1:numimgs
         coor = Classes.(classNames{cl}).Members(i).thumbnailCoor;
         imID = Classes.(classNames{cl}).Members(i).ImID;
-        maxOrigSize = max([coor(2,1) - coor(1,1),coor(1,2) - coor(2,2)]);
-        scaleValue = imSize/maxOrigSize;
-        resImg = imresize(imgs(coor(1,1):coor(2,1), coor(2,2):coor(1,2),1,imID), scaleValue);
+        
+        if abs(coor(1,1)-coor(2,1)) >= abs(coor(2,2)-coor(1,2))
+            imScaler = [imSize, NaN];
+        else
+            imScaler = [NaN, imSize];
+        end
+        
+        resImg = imresize(imgs(coor(1,1):coor(2,1), coor(2,2):coor(1,2),1,imID), imScaler);
         if x > cols
             x = 1;
             y = y + 1;
+        end
+        [hight, width] = size(resImg);
+        if hight ~= width
+            padSize = abs((hight-width))/2;
+            if hight>width
+                resImg = [zeros(hight, floor(padSize)), resImg, zeros(hight, ceil(padSize))];
+            else
+                resImg = [zeros(floor(padSize), width); resImg; zeros(ceil(padSize), width)];
+            end
         end
         offsetw = imSize * (x-1) + sepsize * x;
         offseth = imSize * (y-1) + sepsize * y;
